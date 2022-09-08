@@ -5,7 +5,7 @@
 
 const header = document.querySelector('.header');
 const allSections = document.querySelectorAll('.section');
-const message = document.createElement('div');
+const link = document.querySelector('.twitter-link');
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
@@ -70,29 +70,6 @@ tabsContainer.addEventListener('click', function (e) {
 document.getElementById('section--1');
 const allButtons = document.getElementsByTagName('button');
 
-message.classList.add('cookie-message');
-message.innerHTML =
-  'We use cookies for improved functionalities and analytics <button class= "btn btn--close-cookie"> Got it!</button>';
-
-header.append(message);
-
-document
-  .querySelector('.btn--close-cookie')
-  .addEventListener('click', function () {
-    message.parentElement.removeChild(message);
-  });
-
-message.style.backgroundColor = '#37383d';
-
-message.style.width = '120%';
-
-console.log(getComputedStyle(message).color);
-
-message.style.height =
-  Number.parseFloat(getComputedStyle(message).height, 10) + 30 + 'px';
-
-const link = document.querySelector('.twitter-link');
-
 const handleHover = function (e) {
   if (e.target.classList.contains('nav__link')) {
     const link = e.target;
@@ -108,3 +85,25 @@ const handleHover = function (e) {
 
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
+
+const initialCoords = section1.getBoundingClientRect();
+
+window.addEventListener('scroll', function () {
+  if (window.scrollY > initialCoords.top) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+});
+
+const revealSection = function (entries, observer) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+};
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15,
+});
+allSections.forEach(function (section) {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
